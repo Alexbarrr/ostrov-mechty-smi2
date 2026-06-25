@@ -111,6 +111,8 @@ p{color:var(--muted)}
 
 /* ---------- Сетки ---------- */
 .grid-2{display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(28px,4vw,64px); align-items:center}
+/* в двухколоночных слайдах заголовок не должен залезать на картинку */
+.grid-2 .col h2{font-size:clamp(28px,3.4vw,46px); overflow-wrap:break-word; hyphens:auto}
 .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,1.7vw,26px); margin-top:2em}
 .grid-4{display:grid; grid-template-columns:1fr 1fr; gap:clamp(16px,1.6vw,24px); margin-top:1.8em}
 .stack-grid{margin-top:1.6em; gap:1.5em 3vw}
