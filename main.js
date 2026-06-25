@@ -10,6 +10,11 @@
 
   if (!hasGSAP) document.body.classList.add('no-gsap');
 
+  // Векторные иконки (Lucide) — заменяем <i data-lucide> на <svg> до анимаций
+  if (window.lucide && typeof window.lucide.createIcons === 'function') {
+    window.lucide.createIcons();
+  }
+
   /* ---------- Точки-навигация ---------- */
   slides.forEach((s, i) => {
     const b = document.createElement('button');
@@ -50,21 +55,30 @@
     runCounters(slide);
   }
 
-  /* ---------- Hero: сборка заголовка по буквам ---------- */
+  /* ---------- Hero: сборка заголовка по словам (с учётом <br>) ---------- */
   const heroTitle = document.getElementById('heroTitle');
   if (heroTitle && hasGSAP && !reduceMotion) {
-    const text = heroTitle.textContent;
-    heroTitle.textContent = '';
-    [...text].forEach((ch) => {
-      const span = document.createElement('span');
-      span.textContent = ch === ' ' ? ' ' : ch;
-      span.style.display = 'inline-block';
-      span.style.opacity = 0;
-      heroTitle.appendChild(span);
+    const frag = document.createDocumentFragment();
+    Array.from(heroTitle.childNodes).forEach((node) => {
+      if (node.nodeType === 3) {
+        node.textContent.split(/(\s+)/).forEach((w) => {
+          if (w.trim() === '') { frag.appendChild(document.createTextNode(w)); return; }
+          const span = document.createElement('span');
+          span.textContent = w;
+          span.className = 'hw';
+          span.style.display = 'inline-block';
+          span.style.opacity = 0;
+          frag.appendChild(span);
+        });
+      } else {
+        frag.appendChild(node.cloneNode(true));
+      }
     });
-    gsap.fromTo(heroTitle.children,
-      { y: 34, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.6, stagger: 0.045, delay: 0.25, ease: 'power3.out' });
+    heroTitle.innerHTML = '';
+    heroTitle.appendChild(frag);
+    gsap.fromTo(heroTitle.querySelectorAll('.hw'),
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.7, stagger: 0.08, delay: 0.25, ease: 'power3.out' });
   }
 
   /* ---------- Count-up цифр (кейс 02) ---------- */
@@ -116,9 +130,7 @@
     current = Math.max(0, Math.min(slides.length - 1, current + dir));
     slides[current].scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
   }
-  // отслеживаем текущий по центру вьюпорта
   deck.addEventListener('scroll', () => {
-    const mid = deck.scrollTop + deck.clientHeight / 2;
     current = Math.round(deck.scrollTop / deck.clientHeight);
   }, { passive: true });
 
@@ -130,5 +142,9 @@
   });
 
   // первый слайд сразу
-  if (slides[0]) { seen.add(slides[0]); revealSlide(slides[0]); dots[0].classList.add('active'); progressBar.style.width = (100 / slides.length) + '%'; }
+  if (slides[0]) {
+    seen.add(slides[0]); revealSlide(slides[0]);
+    dots[0].classList.add('active');
+    progressBar.style.width = (100 / slides.length) + '%';
+  }
 })();
