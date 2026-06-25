@@ -1,0 +1,9 @@
+{
+  "pid": 6777,
+  "port": 33611,
+  "token": "4c1940fb-6ef6-47f8-aca1-a6d513fde563",
+  "startedAt": "2026-06-25T12:30:42.581Z",
+  "serverPath": "/Users/aleksbar/.claude/skills/gstack/browse/src/server.ts",
+  "mode": "launched",
+  "configHash": "303a7eeccc03078b"
+}
